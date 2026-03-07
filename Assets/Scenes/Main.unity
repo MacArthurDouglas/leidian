@@ -919,7 +919,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4430dbf5abc313c409f021ba0daf694e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onClick:
+  onClickEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 643089742}
@@ -936,8 +936,8 @@ MonoBehaviour:
         m_CallState: 2
   delay: 0.1
   activated: 1
-  clickable: 1
-  enableBlockCheck: 0
+  enableBlockCheck: 1
+  enableDefaultSpecialEffect: 1
 --- !u!212 &643089740
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1138,13 +1138,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4bc8de6dcd9f03468eb20faf6c688df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onClick:
+  onClickEvent:
     m_PersistentCalls:
       m_Calls: []
   delay: 0.1
   activated: 1
-  clickable: 1
   enableBlockCheck: 0
+  enableDefaultSpecialEffect: 0
   pictureVoiceOn: {fileID: 4937776282413292242, guid: 51750b41ac5950d429ad9e6b09dfac37, type: 3}
   pictureVoiceOnEnter: {fileID: -6094457864904159700, guid: 51750b41ac5950d429ad9e6b09dfac37, type: 3}
   pictureVoiceOff: {fileID: 2419561856368859774, guid: 51750b41ac5950d429ad9e6b09dfac37, type: 3}
@@ -1933,7 +1933,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4430dbf5abc313c409f021ba0daf694e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  onClick:
+  onClickEvent:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 771360265}
@@ -1950,8 +1950,8 @@ MonoBehaviour:
         m_CallState: 2
   delay: 0.1
   activated: 1
-  clickable: 1
-  enableBlockCheck: 0
+  enableBlockCheck: 1
+  enableDefaultSpecialEffect: 1
 --- !u!212 &1453302047
 SpriteRenderer:
   m_ObjectHideFlags: 0

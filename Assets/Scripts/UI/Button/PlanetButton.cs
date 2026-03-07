@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using com.startech.Buttons;
+using com.yihuitech.Buttons;
 using UnityEngine;
 
 public class PlanetButton : Buttons

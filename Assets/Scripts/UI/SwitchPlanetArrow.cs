@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.startech.Buttons;
+using com.yihuitech.Buttons;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -21,7 +21,7 @@ public class SwitchPlanetArrow : Buttons
 
     private IEnumerator SwitchPlanet()
     {
-        Clickable = false;
+        Activated = false;
         PlanetIcon component = planetIcon.GetComponent<PlanetIcon>();
         Direction moveDirection;
         if (direction==Direction.LEFT)
@@ -35,6 +35,6 @@ public class SwitchPlanetArrow : Buttons
         
         
         yield return component.SwitchPlanet(moveDirection);
-        Clickable = true;
+        Activated = true;
     }
 }
