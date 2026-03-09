@@ -1,4 +1,4 @@
-using com.yihuitech.Buttons;
+using com.yihui.Buttons;
 using UnityEngine;
 
 

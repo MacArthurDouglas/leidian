@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 using System.IO;
-using com.yihuitech.Buttons;
+using com.yihui.Buttons;
 using UnityEngine.Serialization;
 
 public class DailyGifts : MonoBehaviour

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using com.yihuitech.Buttons;
+using com.yihui.Buttons;
 using UnityEngine;
 using UnityEngine.Serialization;
 

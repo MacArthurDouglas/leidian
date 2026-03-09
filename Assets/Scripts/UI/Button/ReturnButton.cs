@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using com.yihuitech.Buttons;
+using com.yihui.Buttons;
 using UnityEngine;
 
 public class ReturnButton:Buttons
