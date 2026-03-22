@@ -9,7 +9,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public class ApplicationConfig
 {
-    public static string backendUrl;
+    public static string BackendUrl;
     
     
 
@@ -25,7 +25,7 @@ public class ApplicationConfig
         {
             string yaml = LoadYamlFromFile();
 
-            backendUrl = YamlUtils.BindByPrefix<string>(yaml, "yihui.backend.url");
+            BackendUrl = YamlUtils.BindByPrefix<string>(yaml, "yihui.backend.url");
 
         }
         catch (Exception e)
@@ -38,7 +38,7 @@ public class ApplicationConfig
 
     private static void GetDefaultConfig()
     {
-        backendUrl = "https://api.leidian.mystartech.top";
+        BackendUrl = "https://api.leidian.mystartech.top";
     }
 
 
@@ -68,7 +68,7 @@ public class ApplicationConfig
         {
             return textAsset.text;
         }
-        throw new FileNotFoundException("application.yaml not found");
+        throw new FileNotFoundException("未找到application.yaml！");
     }
     
     

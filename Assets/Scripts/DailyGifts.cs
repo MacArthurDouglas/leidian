@@ -16,9 +16,100 @@ public class DailyGifts : MonoBehaviour
     SpriteRenderer spriteRenderer;
     public bool canEarned;
     // Start is called before the first frame update
+
+    void getDailyGiftsData()
+    {
+        Dictionary<string, string> queryParams = new Dictionary<string, string>();
+        queryParams.Add("name", "赵六");
+        var enumerator = HttpUtils.Get(
+            "/test",
+            queryParams,
+            (result) =>
+            {
+                Debug.Log(result);
+                Debug.Log(result.data);
+                
+            },
+            (error) =>
+            {
+                Debug.LogError(error);
+            }
+        );
+        StartCoroutine(enumerator);
+    }
+    
+    
+    void postDailyGiftsData()
+    {
+        TestDto testDto = new TestDto();
+        testDto.name = "张三";
+        var enumerator = HttpUtils.Post(
+            "/test",
+            testDto,
+            (result) =>
+            {
+                Debug.Log(result);
+                Debug.Log(result.data);
+                
+            },
+            (error) =>
+            {
+                Debug.LogError(error);
+            }
+        );
+        StartCoroutine(enumerator);
+    }
+    
+    void putDailyGiftsData()
+    {
+        TestDto testDto = new TestDto();
+        testDto.name = "李四";
+        var enumerator = HttpUtils.Put(
+            "/test",
+            testDto,
+            (result) =>
+            {
+                Debug.Log(result);
+                Debug.Log(result.data);
+                
+            },
+            (error) =>
+            {
+                Debug.LogError(error);
+            }
+        );
+        StartCoroutine(enumerator);
+    }
+    
+    void deleteDailyGiftsData()
+    {
+        TestDto testDto = new TestDto();
+        testDto.name = "王五";
+        var enumerator = HttpUtils.Delete(
+            "/test",
+            testDto,
+            (result) =>
+            {
+                Debug.Log(result);
+                Debug.Log(result.data);
+                
+            },
+            (error) =>
+            {
+                Debug.LogError(error);
+            }
+        );
+        StartCoroutine(enumerator);
+    }
+    
+    
+    
     void Start()
     {
-        
+        getDailyGiftsData();
+        postDailyGiftsData();
+        putDailyGiftsData();
+        deleteDailyGiftsData();
         //canEarned = true;
         if (!canEarned)
         {
