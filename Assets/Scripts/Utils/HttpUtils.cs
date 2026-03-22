@@ -7,10 +7,10 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public class HttpUtils
 {
-    public static string baseUrl;
+    private static readonly string baseUrl;
     static HttpUtils()
     {
-        baseUrl=ApplicationConfig.Instance.startech.backend.url;
+        baseUrl=ApplicationConfig.backendUrl;
         Debug.Log(baseUrl);
     }
     
