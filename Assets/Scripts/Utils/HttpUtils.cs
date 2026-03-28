@@ -10,11 +10,11 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public class HttpUtils
 {
-    private static readonly string BaseUrl = ApplicationConfig.BackendUrl;
+    private static readonly string ApiBaseUrl = ApplicationConfig.BackendUrl;
     private const int DefaultTimeout = 10;
     static HttpUtils()
     {
-        Debug.Log(BaseUrl);
+        Debug.Log(ApiBaseUrl);
     }
     
      public static IEnumerator Get(
@@ -136,17 +136,13 @@ public class HttpUtils
     private static string BuildFullUrl(string pathOrUrl)
     {
         if (string.IsNullOrEmpty(pathOrUrl))
-            return BaseUrl;
+            return ApiBaseUrl;
         if (pathOrUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
             pathOrUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
             return pathOrUrl;
         }
-        if (BaseUrl.EndsWith("/") && pathOrUrl.StartsWith("/"))
-            return BaseUrl + pathOrUrl.Substring(1);
-        if (!BaseUrl.EndsWith("/") && !pathOrUrl.StartsWith("/"))
-            return BaseUrl + "/" + pathOrUrl;
-        return BaseUrl + pathOrUrl;
+        return ApiBaseUrl.TrimEnd('/') +"/"+ pathOrUrl.TrimStart('/');
     }
     private static string BuildUrlWithQueryParams(string baseUrl, Dictionary<string, string> queryParams)
     {
