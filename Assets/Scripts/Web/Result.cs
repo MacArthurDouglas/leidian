@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ public class Result
 {
     public int code;
     public string message;
-    public object data;
+    public string data;
 
 
     public override string ToString()
