@@ -21,13 +21,13 @@ public class DailyGifts : MonoBehaviour
     {
         Dictionary<string, string> queryParams = new Dictionary<string, string>();
         queryParams.Add("name", "赵六");
-        var enumerator = HttpUtils.Get(
+        var enumerator = HttpUtils.Get<string>(
             "/test",
             queryParams,
             (result) =>
             {
                 Debug.Log(result);
-                Debug.Log(result.data);
+                Debug.Log(result.Data);
                 
             },
             (error) =>
@@ -43,13 +43,13 @@ public class DailyGifts : MonoBehaviour
     {
         TestDto testDto = new TestDto();
         testDto.name = "张三";
-        var enumerator = HttpUtils.Post(
+        var enumerator = HttpUtils.Post<string>(
             "/test",
             testDto,
             (result) =>
             {
                 Debug.Log(result);
-                Debug.Log(result.data);
+                Debug.Log(result.Data);
                 
             },
             (error) =>
@@ -64,13 +64,13 @@ public class DailyGifts : MonoBehaviour
     {
         TestDto testDto = new TestDto();
         testDto.name = "李四";
-        var enumerator = HttpUtils.Put(
+        var enumerator = HttpUtils.Put<string>(
             "/test",
             testDto,
             (result) =>
             {
                 Debug.Log(result);
-                Debug.Log(result.data);
+                Debug.Log(result.Data);
                 
             },
             (error) =>
@@ -85,13 +85,13 @@ public class DailyGifts : MonoBehaviour
     {
         TestDto testDto = new TestDto();
         testDto.name = "王五";
-        var enumerator = HttpUtils.Delete(
+        var enumerator = HttpUtils.Delete<string>(
             "/test",
             testDto,
             (result) =>
             {
                 Debug.Log(result);
-                Debug.Log(result.data);
+                Debug.Log(result.Data);
                 
             },
             (error) =>

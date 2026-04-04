@@ -9,17 +9,28 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public class ApplicationConfig
 {
-    public static string BackendUrl;
+    public string BackendUrl{get; set; }
     
-    
+    private static ApplicationConfig instance;
+    public static ApplicationConfig Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new ApplicationConfig();
+            }
+            return instance;
+        }
+    }
 
-
-    static ApplicationConfig()
+    public void Init()
     {
         LoadConfig();
     }
+    
 
-    private static void LoadConfig()
+    private void LoadConfig()
     {
         try
         {
@@ -31,17 +42,9 @@ public class ApplicationConfig
         catch (Exception e)
         {
             Debug.LogError($"加载application.yaml失败: {e.Message}");
-            // 提供默认配置
-            GetDefaultConfig();
+            return;
         }
     }
-
-    private static void GetDefaultConfig()
-    {
-        BackendUrl = "https://api.leidian.mystartech.top";
-    }
-
-
     private static string LoadYamlFromFile()
     {
         // 优先从 StreamingAssets 加载（可以外部修改）

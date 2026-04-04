@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using DG.Tweening;
+using Newtonsoft.Json;
 
 public class LoginManager : MonoBehaviour
 {
@@ -13,9 +15,9 @@ public class LoginManager : MonoBehaviour
     public TextMeshProUGUI statusText;
     public RectTransform loginPanel;
     
-    private static string authUrl = HttpUtils.SSOApiBaseUrl+"/auth";
-    private static string userUrl = HttpUtils.SSOApiBaseUrl+"/user";
-    private static string loginUrl = authUrl+"/login";
+    public static string AuthUrl => HttpUtils.SSOApiBaseUrl+"/auth";
+    public static string UserUrl => HttpUtils.SSOApiBaseUrl+"/user";
+    public static string LoginUrl => AuthUrl+"/login";
     private static string mainSceneName = "Main";
 
     private bool _isLoading = false;
@@ -74,28 +76,15 @@ public class LoginManager : MonoBehaviour
             login = username,
             password = password
         };
-        string jsonBody = JsonUtility.ToJson(requestData);
 
-        yield return HttpUtils.Post(loginUrl, jsonBody,
+        yield return HttpUtils.Post<LoginResponse>(LoginUrl, requestData,
             onSuccess: (result) =>
             {
-                LoginResponse response = JsonUtility.FromJson<LoginResponse>(result.data);
-
-                if (result.code == 200 && response?.token != null)
-                {
-                    OnLoginSuccess(response.token);
-                }
-                else
-                {
-                    ShowError("用户名或密码错误");
-                    ShakePanel();
-                    _isLoading = false;
-                    SetLoadingState(false);
-                }
+                OnLoginSuccess(result.Data.token);
             },
             onError: (error) =>
             {
-                ShowError("网络错误，请重试");
+                ShowError(error);
                 ShakePanel();
                 _isLoading = false;
                 SetLoadingState(false);

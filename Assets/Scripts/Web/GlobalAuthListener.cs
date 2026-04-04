@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GlobalAuthListener : MonoBehaviour
 {
+    private static GlobalAuthListener instance;
     // 登录场景名称
     private const string LoginSceneName = "Login";
     
@@ -12,6 +13,13 @@ public class GlobalAuthListener : MonoBehaviour
     private bool _isRedirecting = false;
     private void Awake()
     {
+        if (instance!=null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        instance = this;
         // 全局唯一，切换场景不销毁
         DontDestroyOnLoad(gameObject);
     }

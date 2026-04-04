@@ -10,19 +10,16 @@ using YamlDotNet.Serialization.NamingConventions;
 
 public class HttpUtils
 {
-    public static readonly string ApiBaseUrl = ApplicationConfig.BackendUrl;
-    public static readonly string LeiDianApiBaseUrl = ApplicationConfig.BackendUrl+"/leidian";
-    public static readonly string SSOApiBaseUrl = ApplicationConfig.BackendUrl+"/sso";
+    public static string ApiBaseUrl => ApplicationConfig.Instance.BackendUrl;
+    public static string LeiDianServiceBaseUrl => ApplicationConfig.Instance.BackendUrl+"/leidian";
+    public static string SSOApiBaseUrl => ApplicationConfig.Instance.BackendUrl+"/sso";
     private const int DefaultTimeout = 10;
-    static HttpUtils()
-    {
-        Debug.Log(ApiBaseUrl);
-    }
     
-     public static IEnumerator Get(
+    
+     public static IEnumerator Get<T>(
         string pathOrUrl,
         Dictionary<string, string> queryParams = null,
-        Action<Result> onSuccess = null,
+        Action<Result<T>> onSuccess = null,
         Action<string> onError = null)
     {
         string url = BuildFullUrl(pathOrUrl);
@@ -31,10 +28,10 @@ public class HttpUtils
         ApplyCommonSettings(webRequest);
         yield return SendRequest(webRequest, onSuccess, onError);
     }
-    public static IEnumerator Post(
+    public static IEnumerator Post<T>(
         string pathOrUrl,
         object bodyObj = null,
-        Action<Result> onSuccess = null,
+        Action<Result<T>> onSuccess = null,
         Action<string> onError = null
         )
     {
@@ -50,10 +47,10 @@ public class HttpUtils
     }
     
     
-    public static IEnumerator Put(
+    public static IEnumerator Put<T>(
         string pathOrUrl,
         object bodyObj = null,
-        Action<Result> onSuccess = null,
+        Action<Result<T>> onSuccess = null,
         Action<string> onError = null
     )
     {
@@ -69,10 +66,10 @@ public class HttpUtils
     }
     
     
-    public static IEnumerator Delete(
+    public static IEnumerator Delete<T>(
         string pathOrUrl,
         object bodyObj = null,
-        Action<Result> onSuccess = null,
+        Action<Result<T>> onSuccess = null,
         Action<string> onError = null
     )
     {
@@ -88,9 +85,9 @@ public class HttpUtils
     }
     
     
-    private static IEnumerator SendRequest(
+    private static IEnumerator SendRequest<T>(
         UnityWebRequest webRequest,
-        Action<Result> onSuccess,
+        Action<Result<T>> onSuccess,
         Action<string> onError)
     {
         yield return webRequest.SendWebRequest();
@@ -110,8 +107,19 @@ public class HttpUtils
         {
             try
             {
-                Result response = JsonConvert.DeserializeObject<Result>(responseText);
-                onSuccess?.Invoke(response);
+                
+                Result<T> response = JsonConvert.DeserializeObject<Result<T>>(responseText);
+                if (response.Code==200)
+                {
+                    onSuccess?.Invoke(response);
+                }
+                else
+                {
+                    onError?.Invoke(response.Message);
+                }
+                
+                
+                
             }
             catch (Exception e)
             {
@@ -144,13 +152,13 @@ public class HttpUtils
     private static string BuildFullUrl(string pathOrUrl)
     {
         if (string.IsNullOrEmpty(pathOrUrl))
-            return LeiDianApiBaseUrl;
+            return LeiDianServiceBaseUrl;
         if (pathOrUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
             pathOrUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
             return pathOrUrl;
         }
-        return ApiBaseUrl.TrimEnd('/') +"/"+ pathOrUrl.TrimStart('/');
+        return LeiDianServiceBaseUrl.TrimEnd('/') +"/"+ pathOrUrl.TrimStart('/');
     }
     private static string BuildUrlWithQueryParams(string baseUrl, Dictionary<string, string> queryParams)
     {
