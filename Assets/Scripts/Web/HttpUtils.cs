@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -16,125 +17,104 @@ public class HttpUtils
     private const int DefaultTimeout = 10;
     
     
-     public static IEnumerator Get<T>(
+     public static UniTask<Result<T>> Get<T>(
         string pathOrUrl,
-        Dictionary<string, string> queryParams = null,
-        Action<Result<T>> onSuccess = null,
-        Action<string> onError = null)
+        Dictionary<string, string> queryParams = null)
     {
         string url = BuildFullUrl(pathOrUrl);
         url = BuildUrlWithQueryParams(url, queryParams);
-        using UnityWebRequest webRequest = UnityWebRequest.Get(url);
-        ApplyCommonSettings(webRequest);
-        yield return SendRequest(webRequest, onSuccess, onError);
+        var request = UnityWebRequest.Get(url);
+        ApplyCommonSettings(request);
+        return SendRequest<T>(request);
     }
-    public static IEnumerator Post<T>(
+    public static UniTask<Result<T>> Post<T>(
         string pathOrUrl,
-        object bodyObj = null,
-        Action<Result<T>> onSuccess = null,
-        Action<string> onError = null
-        )
+        object bodyObj = null)
     {
         string url = BuildFullUrl(pathOrUrl);
         string jsonStr = bodyObj == null ? "{}" : JsonConvert.SerializeObject(bodyObj);
-        using UnityWebRequest webRequest = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonStr);
-        webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        webRequest.downloadHandler = new DownloadHandlerBuffer();
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        ApplyCommonSettings(webRequest);
-        yield return SendRequest(webRequest, onSuccess, onError);
+        var request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST);
+        AttachJsonBody(request, jsonStr);
+        ApplyCommonSettings(request);
+        return SendRequest<T>(request);
     }
     
     
-    public static IEnumerator Put<T>(
+    public static UniTask<Result<T>> Put<T>(
         string pathOrUrl,
-        object bodyObj = null,
-        Action<Result<T>> onSuccess = null,
-        Action<string> onError = null
-    )
+        object bodyObj = null)
     {
         string url = BuildFullUrl(pathOrUrl);
         string jsonStr = bodyObj == null ? "{}" : JsonConvert.SerializeObject(bodyObj);
-        using UnityWebRequest webRequest = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPUT);
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonStr);
-        webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        webRequest.downloadHandler = new DownloadHandlerBuffer();
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        ApplyCommonSettings(webRequest);
-        yield return SendRequest(webRequest, onSuccess, onError);
+        var request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPUT);
+        AttachJsonBody(request, jsonStr);
+        ApplyCommonSettings(request);
+        return SendRequest<T>(request);
     }
     
     
-    public static IEnumerator Delete<T>(
+    public static UniTask<Result<T>> Delete<T>(
         string pathOrUrl,
-        object bodyObj = null,
-        Action<Result<T>> onSuccess = null,
-        Action<string> onError = null
-    )
+        object bodyObj = null)
     {
         string url = BuildFullUrl(pathOrUrl);
         string jsonStr = bodyObj == null ? "{}" : JsonConvert.SerializeObject(bodyObj);
-        using UnityWebRequest webRequest = new UnityWebRequest(url, UnityWebRequest.kHttpVerbDELETE);
-        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonStr);
-        webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        webRequest.downloadHandler = new DownloadHandlerBuffer();
-        webRequest.SetRequestHeader("Content-Type", "application/json");
-        ApplyCommonSettings(webRequest);
-        yield return SendRequest(webRequest, onSuccess, onError);
+        var request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbDELETE);
+        AttachJsonBody(request, jsonStr);
+        ApplyCommonSettings(request);
+       return SendRequest<T>(request);
     }
     
-    
-    private static IEnumerator SendRequest<T>(
-        UnityWebRequest webRequest,
-        Action<Result<T>> onSuccess,
-        Action<string> onError)
+    //核心发送
+    private static async UniTask<Result<T>> SendRequest<T>(UnityWebRequest request)
     {
-        yield return webRequest.SendWebRequest();
-        string responseText = webRequest.downloadHandler != null
-            ? webRequest.downloadHandler.text 
+        try
+        {
+            await request.SendWebRequest();
+            
+        }
+        catch (UnityWebRequestException e)
+        {
+            // ✅ 检测401，触发全局跳转
+            if (e.ResponseCode == 401)
+            {
+                AuthManager.TriggerUnauthorized();
+                throw new HttpException(401, "登录已过期，请重新登录", request.url);
+            }
+            throw new HttpException((int)e.ResponseCode, e.Message, request.url);
+        }
+        string responseText = request.downloadHandler != null
+            ? request.downloadHandler.text 
             : "";
         
-        // ✅ 检测401，触发全局跳转
-        if (webRequest.responseCode == 401)
-        {
-            AuthManager.TriggerUnauthorized();
-            onError?.Invoke("登录已过期，请重新登录");
-            yield break;
-        }
         
-        if (webRequest.result == UnityWebRequest.Result.Success)
+        
+        if (request.result == UnityWebRequest.Result.Success)
         {
             try
             {
-                
-                Result<T> response = JsonConvert.DeserializeObject<Result<T>>(responseText);
-                if (response.Code==200)
-                {
-                    onSuccess?.Invoke(response);
-                }
-                else
-                {
-                    onError?.Invoke(response.Message);
-                }
-                
-                
-                
+                return JsonConvert.DeserializeObject<Result<T>>(responseText);
             }
             catch (Exception e)
             {
-                onError?.Invoke($"JSON 解析失败: {e.Message}\n原始响应: {responseText}");
+                throw new HttpException(0, $"JSON 解析失败: {e.Message}\n原始响应: {responseText}", request.url);
             }
         }
-        else
-        {
-            string errorMsg =
-                $"URL: {webRequest.url}\n" +
-                $"Code: {webRequest.responseCode}\n" +
-                $"Error: {webRequest.error}\n" +
-                $"Response: {responseText}";
-            onError?.Invoke(errorMsg);
-        }
+        string errorMsg =
+            $"URL: {request.url}\n" +
+            $"Code: {request.responseCode}\n" +
+            $"Error: {request.error}\n" +
+            $"Response: {responseText}";
+        throw new HttpException((int)request.responseCode, errorMsg, request.url);
+
+    }
+    
+    private static void AttachJsonBody(UnityWebRequest request, string jsonStr)
+    {
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonStr);
+        request.uploadHandler   = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
     }
     private static void ApplyCommonSettings(UnityWebRequest webRequest)
     {

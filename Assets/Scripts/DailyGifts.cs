@@ -17,105 +17,63 @@ public class DailyGifts : MonoBehaviour
     public bool canEarned;
     // Start is called before the first frame update
 
-    void getDailyGiftsData()
+    private async void getDailyGiftsData()
     {
         Dictionary<string, string> queryParams = new Dictionary<string, string>();
         queryParams.Add("name", "赵六");
-        var enumerator = HttpUtils.Get<string>(
+        var result = await HttpUtils.Get<string>(
             "/test",
-            queryParams,
-            (result) =>
-            {
-                Debug.Log(result);
-                Debug.Log(result.Data);
-                
-            },
-            (error) =>
-            {
-                Debug.LogError(error);
-            }
+            queryParams
         );
-        StartCoroutine(enumerator);
+        Debug.Log(result);
+        Debug.Log(result.Data);
+        
     }
     
     
-    void postDailyGiftsData()
+    private async void postDailyGiftsData()
     {
         TestDto testDto = new TestDto();
         testDto.name = "张三";
-        var enumerator = HttpUtils.Post<string>(
+        var result = await HttpUtils.Post<string>(
             "/test",
-            testDto,
-            (result) =>
-            {
-                Debug.Log(result);
-                Debug.Log(result.Data);
-                
-            },
-            (error) =>
-            {
-                Debug.LogError(error);
-            }
+            testDto
         );
-        StartCoroutine(enumerator);
+        Debug.Log(result);
+        Debug.Log(result.Data);
     }
     
-    void putDailyGiftsData()
+    private async void putDailyGiftsData()
     {
         TestDto testDto = new TestDto();
         testDto.name = "李四";
-        var enumerator = HttpUtils.Put<string>(
+        var result = await HttpUtils.Put<string>(
             "/test",
-            testDto,
-            (result) =>
-            {
-                Debug.Log(result);
-                Debug.Log(result.Data);
-                
-            },
-            (error) =>
-            {
-                Debug.LogError(error);
-            }
+            testDto
         );
-        StartCoroutine(enumerator);
+        Debug.Log(result);
+        Debug.Log(result.Data);
     }
     
-    void deleteDailyGiftsData()
+    private async void deleteDailyGiftsData()
     {
         TestDto testDto = new TestDto();
         testDto.name = "王五";
-        var enumerator = HttpUtils.Delete<string>(
+        var result = await HttpUtils.Delete<string>(
             "/test",
-            testDto,
-            (result) =>
-            {
-                Debug.Log(result);
-                Debug.Log(result.Data);
-                
-            },
-            (error) =>
-            {
-                Debug.LogError(error);
-            }
+            testDto
         );
-        StartCoroutine(enumerator);
+        Debug.Log(result);
+        Debug.Log(result.Data);
     }
 
 
-    void getUser()
+    private async void getUser()
     {
-        var enumerator = HttpUtils.Get<UserInfoVo>("/test/user", null,
-            (result =>
-            {
-                Debug.Log(result);
-                Debug.Log(result.Data);
-            }),
-            (error) =>
-            {
-                Debug.LogError(error);
-            });
-        StartCoroutine(enumerator);
+        var result = await HttpUtils.Get<UserInfoVo>("/test/user", null);
+        Debug.Log(result);
+        Debug.Log(result.Data);
+        Debug.Log(result.Data.username);
     }
     
     

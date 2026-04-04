@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
@@ -39,7 +40,7 @@ public class LoginManager : MonoBehaviour
         passwordField.onSubmit.AddListener(_ => OnLoginButtonClick());
     }
 
-    private void OnLoginButtonClick()
+    private async void OnLoginButtonClick()
     {
         if (_isLoading) return;
 
@@ -61,11 +62,6 @@ public class LoginManager : MonoBehaviour
             return;
         }
 
-        StartCoroutine(LoginCoroutine(username, password));
-    }
-
-    private IEnumerator LoginCoroutine(string username, string password)
-    {
         _isLoading = true;
         SetLoadingState(true);
         ShowStatus("登录中...", Color.gray);
@@ -77,21 +73,24 @@ public class LoginManager : MonoBehaviour
             password = password
         };
 
-        yield return HttpUtils.Post<LoginResponse>(LoginUrl, requestData,
-            onSuccess: (result) =>
-            {
-                OnLoginSuccess(result.Data.token);
-            },
-            onError: (error) =>
-            {
-                ShowError(error);
-                ShakePanel();
-                _isLoading = false;
-                SetLoadingState(false);
-            });
+        var result =await HttpUtils.Post<LoginResponse>(LoginUrl, requestData);
+        if (result.Code==200)
+        {
+            OnLoginSuccess(result.Data.token);
+        }
+        else
+        {
+            ShowError(result.Message);
+            ShakePanel();
+            _isLoading = false;
+            SetLoadingState(false);
+        }
 
+        
+
+        
     }
-
+    
     private void OnLoginSuccess(string token)
     {
         // 保存Token
