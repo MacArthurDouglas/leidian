@@ -101,6 +101,22 @@ public class DailyGifts : MonoBehaviour
         );
         StartCoroutine(enumerator);
     }
+
+
+    void getUser()
+    {
+        var enumerator = HttpUtils.Get<UserInfoVo>("/test/user", null,
+            (result =>
+            {
+                Debug.Log(result);
+                Debug.Log(result.Data);
+            }),
+            (error) =>
+            {
+                Debug.LogError(error);
+            });
+        StartCoroutine(enumerator);
+    }
     
     
     
@@ -110,6 +126,7 @@ public class DailyGifts : MonoBehaviour
         postDailyGiftsData();
         putDailyGiftsData();
         deleteDailyGiftsData();
+        getUser();
         //canEarned = true;
         if (!canEarned)
         {
