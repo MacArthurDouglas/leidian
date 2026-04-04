@@ -120,12 +120,13 @@ public class APIController : MonoBehaviour
             StringBuilder formattedText = new StringBuilder();
             
             // 添加成功消息
-            formattedText.AppendLine($"<color=green>✓ {response.msg}</color>");
-            formattedText.AppendLine();
+            //formattedText.AppendLine($"<color=green>✓ {response.msg}</color>");
+            //formattedText.AppendLine();
             
             // 添加用户信息
             if (response.data != null)
             {
+                /*
                 formattedText.AppendLine($"<b>用户信息</b>");
                 formattedText.AppendLine($"──────────────");
                 formattedText.AppendLine($"ID: {response.data.id}");
@@ -143,6 +144,8 @@ public class APIController : MonoBehaviour
                 string statusColor = response.data.status == "active" ? 
                     "green" : "orange";
                 formattedText.AppendLine($"状态: <color={statusColor}>{response.data.status}</color>");
+                */
+                formattedText.AppendLine($"用户名: {response.data.username}");
             }
             
             displayText.text = formattedText.ToString();
@@ -187,16 +190,6 @@ public class APIController : MonoBehaviour
         {
             displayText.text = $"{errorMessagePrefix}{message}";
             displayText.color = Color.red;
-        }
-    }
-
-    // 手动设置API地址（可选）
-    public void SetApiUrl(string url)
-    {
-        if (!string.IsNullOrEmpty(url))
-        {
-            apiUrl = url;
-            Debug.Log($"API地址已更新: {apiUrl}");
         }
     }
 
